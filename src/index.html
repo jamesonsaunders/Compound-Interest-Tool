@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Compound Interest Tool</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+      --input: #0b1220;
+      --border: #1f2937;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #475569;
+        --accent: #0284c7;
+        --input: #f1f5f9;
+        --border: #e2e8f0;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    main {
+      width: 100%;
+      min-height: 100vh;
+      padding: 24px 20px 32px;
+      display: grid;
+      align-content: start;
+      gap: 6px;
+      background: var(--bg);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin: 0 0 6px;
+    }
+
+    p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 1rem;
+    }
+
+    .row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .result h2 {
+      margin: 0 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .result strong {
+      font-size: 1.6rem;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .cta {
+      margin-top: 28px;
+      padding: 16px;
+      border-radius: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      text-align: center;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Compound Interest Tool</h1>
+    <p>"Compound interest is the eighth wonder of the world. He who understands it, earns it ... he who doesn't ... pays it." - Albert Einstein</p>
+
+    <form id="compound-form" novalidate>
+      <div>
+        <label for="principal">Starting amount</label>
+        <input id="principal" name="principal" type="number" inputmode="decimal" min="0" step="0.01" value="1000" required />
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="rate">Annual interest (%)</label>
+          <input id="rate" name="rate" type="number" inputmode="decimal" min="0" step="0.01" value="5" required />
+        </div>
+        <div>
+          <label for="years">Years</label>
+          <input id="years" name="years" type="number" inputmode="numeric" min="0" step="1" value="10" required />
+        </div>
+        <div>
+          <label for="frequency">Compounds per year</label>
+          <select id="frequency" name="frequency">
+            <option value="1">Yearly</option>
+            <option value="2">Semi-annual</option>
+            <option value="4">Quarterly</option>
+            <option value="12" selected>Monthly</option>
+            <option value="365">Daily</option>
+          </select>
+        </div>
+        <div>
+          <label for="contribution">Monthly contribution</label>
+          <input id="contribution" name="contribution" type="number" inputmode="decimal" min="0" step="0.01" value="0" />
+        </div>
+      </div>
+    </form>
+
+    <section class="result" aria-live="polite">
+      <h2>Estimated balance</h2>
+      <strong id="balance">$0.00</strong>
+      <div id="details"></div>
+    </section>
+
+    <div class="cta">
+      <a href="https://botgroupllc.com" target="_blank" rel="noreferrer">Need an app or website developed?</a>
+    </div>
+
+    <div class="footer">
+      Assumes contributions are added monthly at period end.
+      <div>For informational purposes only. Not financial, investment, tax, or legal advice.</div>
+      <div>© 2026 Bot Group LLC. All rights reserved.</div>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('compound-form');
+    const balanceEl = document.getElementById('balance');
+    const detailsEl = document.getElementById('details');
+
+    const formatCurrency = (value) =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 2,
+      }).format(value);
+
+    const calculate = () => {
+      const principal = parseFloat(form.principal.value) || 0;
+      const rate = (parseFloat(form.rate.value) || 0) / 100;
+      const years = parseFloat(form.years.value) || 0;
+      const frequency = parseFloat(form.frequency.value) || 1;
+      const monthlyContribution = parseFloat(form.contribution.value) || 0;
+
+      const totalPeriods = years * frequency;
+      const periodRate = rate / frequency;
+
+      let balance = principal * Math.pow(1 + periodRate, totalPeriods);
+
+      if (monthlyContribution > 0 && years > 0) {
+        const monthlyRate = rate / 12;
+        const months = years * 12;
+        if (monthlyRate === 0) {
+          balance += monthlyContribution * months;
+        } else {
+          balance += monthlyContribution * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+        }
+      }
+
+      const totalContributions = principal + monthlyContribution * (years * 12);
+      const interestEarned = balance - totalContributions;
+
+      balanceEl.textContent = formatCurrency(balance);
+      detailsEl.textContent = `Total contributions: ${formatCurrency(totalContributions)} · Interest earned: ${formatCurrency(interestEarned)}`;
+    };
+
+    form.addEventListener('input', calculate);
+    calculate();
+  </script>
+</body>
+</html>
