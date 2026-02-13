@@ -61,9 +61,34 @@
       background: var(--bg);
     }
 
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     h1 {
       font-size: 1.5rem;
-      margin: 0 0 6px;
+      margin: 0;
     }
 
     p {
@@ -126,6 +151,11 @@
       text-align: center;
     }
 
+    .footer a {
+      color: inherit;
+      text-decoration: underline;
+    }
+
     .cta {
       margin-top: 28px;
       padding: 16px;
@@ -139,7 +169,12 @@
 </head>
 <body>
   <main>
-    <h1>Compound Interest Tool</h1>
+    <div class="title-row">
+      <span class="logo" aria-hidden="true">
+        <img src="icon.png" alt="" />
+      </span>
+      <h1>Compound Interest Tool</h1>
+    </div>
     <p>"Compound interest is the eighth wonder of the world. He who understands it, earns it ... he who doesn't ... pays it." - Albert Einstein</p>
 
     <form id="compound-form" novalidate>
@@ -187,6 +222,12 @@
     <div class="footer">
       Assumes contributions are added monthly at period end.
       <div>For informational purposes only. Not financial, investment, tax, or legal advice.</div>
+      <div>
+        By using this software you agree to the
+        <a href="https://jamesonsaunders.com/terms-of-use" target="_blank" rel="noreferrer">Terms of Use</a>
+        and
+        <a href="http://jamesonsaunders.com/privacy" target="_blank" rel="noreferrer">Privacy Policy</a>.
+      </div>
       <div>© 2026 Bot Group LLC. All rights reserved.</div>
     </div>
   </main>
