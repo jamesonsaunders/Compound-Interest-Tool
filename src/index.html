@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Compound Interest Tool</title>
   <link rel="icon" href="icon.png" type="image/png" />
+  <link rel="stylesheet" href="styles.css" />
   <meta name="description" content="Compound interest calculator and investment growth calculator with monthly contributions. Mobile-friendly savings and interest rate calculator for future value planning." />
   <meta property="og:title" content="Compound Interest Tool" />
   <meta property="og:description" content="Compound interest calculator and investment growth calculator with monthly contributions. Mobile-friendly savings and interest rate calculator for future value planning." />
@@ -15,167 +16,20 @@
   <meta name="twitter:title" content="Compound Interest Tool" />
   <meta name="twitter:description" content="Compound interest calculator and investment growth calculator with monthly contributions. Mobile-friendly savings and interest rate calculator for future value planning." />
   <meta name="twitter:image" content="https://compound.jamesonsaunders.com/icon.png" />
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #0f172a;
-      --card: #111827;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #38bdf8;
-      --input: #0b1220;
-      --border: #1f2937;
-    }
-
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f8fafc;
-        --card: #ffffff;
-        --text: #0f172a;
-        --muted: #475569;
-        --accent: #0284c7;
-        --input: #f1f5f9;
-        --border: #e2e8f0;
-      }
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    main {
-      width: 100%;
-      min-height: 100vh;
-      padding: 24px 20px 32px;
-      display: grid;
-      align-content: start;
-      gap: 6px;
-      background: var(--bg);
-    }
-
-    .title-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 6px;
-    }
-
-    .logo {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      overflow: hidden;
-      background: var(--card);
-      border: 1px solid var(--border);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-      margin: 0;
-    }
-
-    p {
-      margin: 0 0 20px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    form {
-      display: grid;
-      gap: 14px;
-    }
-
-    label {
-      font-size: 0.9rem;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: #ffffff;
-      color: #0f172a;
-      font-size: 1rem;
-    }
-
-    .row {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    }
-
-    .result {
-      margin-top: 20px;
-      padding: 16px;
-      border-radius: 12px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-    }
-
-    .result h2 {
-      margin: 0 0 8px;
-      font-size: 1.1rem;
-    }
-
-    .result strong {
-      font-size: 1.6rem;
-      display: block;
-      margin-top: 4px;
-    }
-
-    .footer {
-      margin-top: 18px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    .footer a {
-      color: inherit;
-      text-decoration: underline;
-    }
-
-    .cta {
-      margin-top: 28px;
-      padding: 16px;
-      border-radius: 12px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      text-align: center;
-      font-weight: 600;
-    }
-  </style>
 </head>
 <body>
-  <main>
+  <main class="tool-main">
+    <nav class="tab-bar" aria-label="Primary">
+      <a class="active" href="index.html">Tool</a>
+      <a href="about.html">About</a>
+    </nav>
+
     <div class="title-row">
       <span class="logo" aria-hidden="true">
         <img src="icon.png" alt="" />
       </span>
       <h1>Compound Interest Tool</h1>
     </div>
-    <p>"Compound interest is the eighth wonder of the world. He who understands it, earns it ... he who doesn't ... pays it." - Albert Einstein</p>
 
     <form id="compound-form" novalidate>
       <div>
@@ -212,7 +66,8 @@
     <section class="result" aria-live="polite">
       <h2>Estimated balance</h2>
       <strong id="balance">$0.00</strong>
-      <div id="details"></div>
+      <div id="contributions"></div>
+      <div id="interest"></div>
     </section>
 
     <div class="cta">
@@ -235,7 +90,8 @@
   <script>
     const form = document.getElementById('compound-form');
     const balanceEl = document.getElementById('balance');
-    const detailsEl = document.getElementById('details');
+    const contributionsEl = document.getElementById('contributions');
+    const interestEl = document.getElementById('interest');
 
     const formatCurrency = (value) =>
       new Intl.NumberFormat('en-US', {
@@ -270,7 +126,8 @@
       const interestEarned = balance - totalContributions;
 
       balanceEl.textContent = formatCurrency(balance);
-      detailsEl.textContent = `Total contributions: ${formatCurrency(totalContributions)} · Interest earned: ${formatCurrency(interestEarned)}`;
+      contributionsEl.textContent = `Total contributions: ${formatCurrency(totalContributions)}`;
+      interestEl.textContent = `Interest earned: ${formatCurrency(interestEarned)}`;
     };
 
     form.addEventListener('input', calculate);
